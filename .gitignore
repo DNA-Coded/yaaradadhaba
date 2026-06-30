@@ -12,3 +12,7 @@ dist/
 .vscode/
 .idea/
 .gemini/
+
+# Raw media and backups
+img/
+original_html_backup/

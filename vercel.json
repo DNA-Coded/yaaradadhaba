@@ -1,0 +1,9 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/((?!onlineorder|images|css|js|vendors|assets|.*\\..*$).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
