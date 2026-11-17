@@ -14,5 +14,9 @@ dist/
 .gemini/
 
 # Raw media and backups
-img/
-original_html_backup/
+/img/
+/original_html_backup/
+
+# Generated reports (kept local)
+*-Report.pdf
+AUDIT_REPORT.md

@@ -1,101 +1,90 @@
 # Yaara Da Dhaba
 
-A modern, high-performance, and fully responsive website for **Yaara Da Dhaba**—a local food outlet located in Agarpara, Kolkata. The website is built using React, Vite, and custom Vanilla CSS, designed with a food-first layout to make menu exploration and food discovery seamless, fast, and authentic.
+Website for **Yaara Da Dhaba**, a neighbourhood dhaba at 81, Nilgunj Road, Agarpara, Kolkata. Built with React 18, React Router 6 and Vite 5, with hand-written CSS and no UI framework.
 
----
+Visitors can browse the full menu with prices, build an order and send it to the dhaba on WhatsApp in one message, see real photos, read reviews and find the shop.
 
-## 🍽️ About the Restaurant
-Yaara Da Dhaba serves freshly prepared, high-quality, and highly affordable meals. The menu focuses on:
-* **Chinese** (Chowmein, Fried Rice, Manchurian)
-* **Biryani** (Chicken Biryani, Egg Biryani, Aloo Biryani)
-* **Rolls** (Egg, Chicken, Paneer, and Cheese varieties)
-* **South Indian** (Crispy Dosas, Idlis)
-* **Meals & Thalis** (Veg, Egg, Fish, and Chicken meals)
-* **Momos** (Steamed and Fried)
+## Features
 
----
+- **Menu as a price board.** 72 dishes in 9 sections, with search, a veg / non-veg filter, sticky section chips that track your scroll, and deep links like `/menu#biryani`.
+- **Built for phones first.** Thumb-reach bottom tab bar (Home, Menu, Order, Call, Find us), a header that hides while scrolling, swipeable rows and a bottom-sheet order you can drag closed.
+- **WhatsApp ordering.** Add dishes, change quantities, choose pickup or delivery, then send one pre-filled WhatsApp message. The order is remembered in the browser if the visitor leaves and comes back.
+- **Live open / closed badge** based on Kolkata time.
+- **Site search** for dishes and pages (header button, or `/` on a keyboard), **dark mode** that follows the phone, a **FAQ**, **copy address / phone**, a **printable menu**, toasts with **undo**, and a Google Map that only loads when tapped.
+- **Real photo gallery** with filters and an accessible lightbox (keyboard, swipe, focus handling).
+- **Security:** strict Content-Security-Policy and HSTS headers in `vercel.json`, `npm audit` clean, unknown URLs return a real 404.
+- **SEO:** per-page titles, descriptions, canonical URLs, Open Graph image, `Restaurant` structured data, `sitemap.xml`, `robots.txt`.
+- **Accessibility:** skip link, visible keyboard focus, labelled controls, WCAG AA colour contrast, `prefers-reduced-motion` support.
 
-## ✨ Features
-* **🚀 Fast Performance**: Pre-bundled and compiled using Vite for near-instant load times.
-* **📱 Mobile-First Design**: Optimized for seamless navigation across desktops, laptops, tablets, and mobile screens.
-* **📂 Interactive Menu Page**: Inspired by Swiggy/Zomato, featuring category filters, Veg/Non-Veg toggle, instant search, and WhatsApp ordering integrations.
-* **🖼️ Dhaba Photo Gallery**: Live category filtering (Food, Kitchen, Restaurant) with an accessible and touch-friendly lightbox overlay.
-* **⭐ Authentic Reviews**: Clean ratings summary section showing a 4.3 Google rating with real customer testimonials and a call-to-action to view live Google Reviews.
-* **📞 Quick Actions**: Sticky navbar CTA and WhatsApp/Call buttons on cards for fast customer orders.
-* **🔍 SEO Ready**: Custom `useSEO` hook dynamically injecting descriptions, optimized titles, Open Graph tags, and social share metadata.
-* **🔒 Policy Compliant**: Includes standard routes for Privacy Policy, Terms & Conditions, Refund/Cancellation, and Shipping Policies.
+## Getting started
 
----
+Requires Node.js 18 or newer.
 
-## 🛠️ Tech Stack
-* **Core**: React 18.3, React Router DOM 6.23
-* **Build System**: Vite 5.2
-* **Styling**: Custom Vanilla CSS (No heavy framework overhead)
-* **Icons**: Google Material Icons
-
----
-
-## 📂 Project Directory Structure
-```
-Yaara_da_dhaba/
-├── public/                 # Static assets
-│   ├── images/             # Optimized food photography & branding
-│   └── onlineorder/        # Standalone online order interface
-├── src/
-│   ├── components/         # Reusable Header & Footer elements
-│   ├── hooks/              # useSEO custom SEO helper hook
-│   ├── pages/              # Page components (Home, Menu, Gallery, Reviews, etc.)
-│   ├── App.jsx             # React routing configurations
-│   ├── dhaba.css           # Global custom style rules & media queries
-│   └── main.jsx            # Entry point file
-├── index.html              # HTML shell & web fonts loading
-├── package.json            # Scripts & dependencies definitions
-├── vercel.json             # Vercel deployment routing rewrites
-└── vite.config.js          # Vite config definitions
-```
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-Make sure you have Node.js (version 16 or above) installed on your system.
-
-### 1. Installation
-Clone the repository and install all dependencies:
 ```bash
 npm install
+npm run dev       # http://localhost:5173
+npm run build     # production build in dist/
+npm run preview   # serve dist/ at http://localhost:4173
 ```
 
-### 2. Run Locally
-Start the local Vite development server:
+> **WSL users:** if `npm` fails with `Cannot find module 'C:\...\npm'`, your shell is picking up the Windows Node. Put the Linux Node first, for example `export PATH="$HOME/.nvm/versions/node/<version>/bin:$PATH"`.
+
+## Updating content
+
+All business details live in `src/data/`, so most edits touch one file:
+
+| What to change | File |
+| --- | --- |
+| Phone numbers, address, hours, map links, site URL | `src/data/site.js` |
+| Dishes, prices, veg flag, best sellers, home page favourites | `src/data/menu.js` |
+| Customer reviews | `src/data/reviews.js` |
+| Gallery photos and captions | `src/data/gallery.js` |
+
+### Images
+
+Original photos are kept in `assets-src/` and are **not** deployed. Web-ready versions in `public/img/` are generated with:
+
 ```bash
-npm run dev
-```
-Open [http://localhost:5173](http://localhost:5173) in your browser to view the application.
-
-### 3. Production Build
-Generate a production-ready static build bundle inside the `dist/` directory:
-```bash
-npm run build
+npm run images
 ```
 
-### 4. Local Preview
-Verify the production build locally:
-```bash
-npm run preview
+This resizes and converts every photo to WebP, creates the transparent logo, favicons and the social-share image. To add a gallery photo: drop it in `assets-src/gallery/`, run `npm run images`, then add an entry to `src/data/gallery.js`.
+
+## Project structure
+
+```
+assets-src/          Original photos (not deployed)
+  brand/  dishes/  gallery/  low-res/
+public/
+  img/               Generated, optimised images
+  robots.txt  sitemap.xml  site.webmanifest
+scripts/
+  optimize-images.mjs
+src/
+  cart/              Order basket (context, drawer, add buttons)
+  components/        Header, Footer, Icon set, shared UI
+  data/              Menu, reviews, gallery, business details
+  hooks/useSEO.js    Per-page meta tags
+  pages/             Home, Menu, Gallery, Reviews, About, Contact, Legal, NotFound
+  App.jsx            Routes (pages are lazy-loaded)
+  styles.css         Design tokens and all styles
+index.html           Fonts, structured data, default meta
+vercel.json          SPA rewrites, caching and security headers
 ```
 
----
+## Campaign links (see where orders come from)
 
-## 📦 Deployment Instructions
+Add `utm_source` (and optionally `utm_campaign`) to links you share. The site keeps it for the visit and adds a line like `Found you via: instagram / diwali` to the WhatsApp order. No tracking scripts or cookies are involved.
 
-### Vercel Deployment
-This project is configured and ready for immediate deployment on Vercel:
-1. Push this project folder to your GitHub repository.
-2. Link the repository to your Vercel Dashboard.
-3. Configure the following build settings:
-   * **Framework Preset**: Vite
-   * **Build Command**: `npm run build`
-   * **Output Directory**: `dist`
-4. The router uses `vercel.json` rewrites to guarantee SPA route safety (preventing 404 errors on direct path refreshes).
+| Where | Link |
+| --- | --- |
+| Instagram bio | `https://yaaradadhaba.vercel.app/menu?utm_source=instagram&utm_medium=bio` |
+| Instagram post or reel | `https://yaaradadhaba.vercel.app/menu?utm_source=instagram&utm_campaign=<post-name>` |
+| WhatsApp status | `https://yaaradadhaba.vercel.app/menu?utm_source=whatsapp-status` |
+| Printed QR code at the shop | `https://yaaradadhaba.vercel.app/menu?utm_source=qr-counter` |
+
+## Deployment
+
+Configured for Vercel: `vercel.json` rewrites routes to `index.html`, caches hashed assets for a year, and redirects the old `/onlineorder` URL to `/menu`.
+
+Live site: **https://yaaradadhaba.vercel.app**. Vercel deploys automatically on every push to `main`. If the site moves to a custom domain, update the URL in `src/data/site.js`, `index.html`, `public/robots.txt` and `public/sitemap.xml`.

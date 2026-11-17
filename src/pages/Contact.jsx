@@ -1,91 +1,105 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 import useSEO from '../hooks/useSEO.js';
+import Icon from '../components/Icon.jsx';
+import { MapEmbed, OpenBadge, PageHero } from '../components/ui.jsx';
+import { useCopy } from '../components/feedback.jsx';
+import { site, whatsappLink, GREETING } from '../data/site.js';
+import { galleryImg } from '../data/gallery.js';
+import { faq } from '../data/faq.js';
+
+// FAQ structured data so search engines can show the answers directly.
+function useFaqSchema() {
+  useEffect(() => {
+    const el = document.createElement('script');
+    el.type = 'application/ld+json';
+    el.id = 'faq-schema';
+    el.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+    });
+    document.head.appendChild(el);
+    return () => el.remove();
+  }, []);
+}
 
 export default function Contact() {
   useSEO({
-    title: "Contact Yaara Da Dhaba | Order Online & Table Booking",
-    description: "Get in touch with Yaara Da Dhaba. Find our location in Agarpara, Kolkata, call us at 9903005932, or message us on WhatsApp to order fresh hot food."
+    title: 'Contact & Location | Yaara Da Dhaba, Agarpara',
+    description: `Call ${site.phonePrimaryLabel} or WhatsApp to order. Find Yaara Da Dhaba at 81, Nilgunj Road, Agarpara, Kolkata 700109. Open 10 AM to 10 PM daily. Delivery, cancellation and veg FAQs.`,
   });
+  useFaqSchema();
+  const copy = useCopy();
 
   return (
     <>
-      {/* Breadcrumb section */}
-      <div className="mad-breadcrumb with-bg" data-bg-image-src="/images/1920x400_bg3.jpg">
+      <PageHero
+        title="Contact and location"
+        intro="Call, message or just walk in. We are on Nilgunj Road in Agarpara."
+        image={galleryImg('storefront-counter', 1400)}
+      />
+
+      <section className="section">
         <div className="container">
-          <nav className="mad-breadcrumb-path">
-            <span><Link to="/">Home</Link></span> / <span>Contact Us</span>
-          </nav>
-          <h1 className="mad-page-title">Yaara da Dhaba</h1>
-        </div>
-      </div>
-
-      <div className="mad-content mad-content--no-pt pad-3">
-        <div className="container">
-          <div className="mad-section pad-0">
-            <div className="content-element-lg">
-              <div className="row vr-size-2">
-                <div className="col-xl-12">
-                  {/* Google Map Embedded Iframe */}
-                  <div className="content-element-6" style={{ borderRadius: '8px', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-                    <iframe 
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3682.355106192837!2d88.37583767523912!3d22.691456179427613!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f89d4600000001%3A0x6b84089e5746b198!2sYaara%20Da%20Dhaba!5e0!3m2!1sen!2sin!4v1719744578923!5m2!1sen!2sin" 
-                      width="100%" 
-                      height="450" 
-                      style={{ border: 0 }} 
-                      allowFullScreen="" 
-                      loading="lazy" 
-                      referrerPolicy="no-referrer-when-downgrade"
-                      title="Yaara da Dhaba Location"
-                    ></iframe>
-                  </div>
-
-                  <div className="row" style={{ marginTop: '40px' }}>
-                    <div className="col-lg-4">
-                      <h4>Address</h4>
-                      <ul className="mad-our-info size-2">
-                        <li style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                          <i className="material-icons">location_on</i>
-                          <span>
-                            81, Nilgunj Road, Panjavila, Jagarata Pally, Deshpriya Nagar, Agarpara, Kolkata, West Bengal 700109
-                          </span>
-                        </li>
-                      </ul>
-                    </div>
-                    
-                    <div className="col-lg-4">
-                      <h4>Contact Details</h4>
-                      <ul className="mad-our-info size-2">
-                        <li style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '8px' }}>
-                          <i className="material-icons">phone</i>
-                          <span><a href="tel:+919903005932">+91 9903005932</a></span>
-                        </li>
-                        <li style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '8px' }}>
-                          <i className="material-icons">phone</i>
-                          <span><a href="tel:+919875521685">+91 9875521685</a></span>
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div className="col-lg-4">
-                      <h4>Timings</h4>
-                      <ul className="mad-our-info size-2">
-                        <li style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                          <i className="material-icons">access_time</i>
-                          <span>
-                            Monday - Sunday : 10:00 AM - 10:00 PM
-                          </span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-
-                </div>
+          <ul className="contact-cards">
+            <li className="contact-card">
+              <h2><Icon name="phone" size={20} /> Call us</h2>
+              <div className="contact-body">
+                <a href={`tel:${site.phonePrimary}`} className="contact-big">{site.phonePrimaryLabel}</a>
+                <a href={`tel:${site.phoneSecondary}`}>{site.phoneSecondaryLabel}</a>
+                <button type="button" className="copy-btn" onClick={() => copy(site.phonePrimaryLabel, 'Phone number')}>
+                  <Icon name="copy" size={16} /> Copy number
+                </button>
               </div>
-            </div>
+            </li>
+            <li className="contact-card">
+              <h2><Icon name="whatsapp" size={20} /> WhatsApp</h2>
+              <div className="contact-body">
+                <span>Send your order or a question. We reply during opening hours.</span>
+                <a href={whatsappLink(GREETING)} target="_blank" rel="noopener noreferrer" className="contact-big">Start a chat</a>
+              </div>
+            </li>
+            <li className="contact-card">
+              <h2><Icon name="clock" size={20} /> Hours</h2>
+              <div className="contact-body">
+                <span className="contact-big">{site.hoursLabel}</span>
+                <OpenBadge />
+              </div>
+            </li>
+            <li className="contact-card">
+              <h2><Icon name="pin" size={20} /> Address</h2>
+              <div className="contact-body">
+                <address>{site.addressLines.map((l) => <span key={l}>{l}</span>)}</address>
+                <a href={site.directionsLink} target="_blank" rel="noopener noreferrer">Get directions</a>
+                <button type="button" className="copy-btn" onClick={() => copy(site.addressFull, 'Address')}>
+                  <Icon name="copy" size={16} /> Copy address
+                </button>
+              </div>
+            </li>
+          </ul>
+          <MapEmbed className="map-frame-wide" />
+        </div>
+      </section>
+
+      <section className="section section-steel" id="faq" aria-labelledby="faq-title">
+        <div className="container faq-wrap">
+          <div className="section-head">
+            <h2 id="faq-title" className="section-title">Questions people ask</h2>
+            <p className="section-lead">Quick answers about ordering, delivery and visiting.</p>
+          </div>
+          <div className="faq">
+            {faq.map((f) => (
+              <details key={f.q} className="faq-item">
+                <summary>
+                  <span>{f.q}</span>
+                  <Icon name="chevronDown" className="faq-chevron" />
+                </summary>
+                <p>{f.a}</p>
+              </details>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
     </>
   );
 }

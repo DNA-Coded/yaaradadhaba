@@ -1,69 +1,64 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
+import Icon from './Icon.jsx';
+import { OpenBadge } from './ui.jsx';
+import { site, whatsappLink, GREETING } from '../data/site.js';
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
+  const year = new Date().getFullYear();
 
   return (
-    <footer className="dhaba-footer">
-      <div className="container">
-        <div className="dhaba-footer-grid">
-          {/* Column 1: Logo & Tagline */}
-          <div className="dhaba-footer-col">
-            <div className="dhaba-footer-logo-text">YAARA DA DHABA</div>
-            <p className="dhaba-footer-logo-desc">
-              Serving delicious, fresh, and affordable Chinese, Biryani, Dosa, Momo, and more since years. Made fresh daily for everyone.
-            </p>
-          </div>
-
-          {/* Column 2: Quick Links */}
-          <div className="dhaba-footer-col">
-            <h4>Quick Links</h4>
-            <ul className="dhaba-footer-links">
-              <li><Link to="/" className="dhaba-footer-link">Home</Link></li>
-              <li><Link to="/menu" className="dhaba-footer-link">Menu</Link></li>
-              <li><Link to="/gallery" className="dhaba-footer-link">Gallery</Link></li>
-              <li><Link to="/reviews" className="dhaba-footer-link">Reviews</Link></li>
-              <li><Link to="/about" className="dhaba-footer-link">About Us</Link></li>
-              <li><Link to="/contact" className="dhaba-footer-link">Contact</Link></li>
-            </ul>
-          </div>
-
-          {/* Column 3: Policy Links */}
-          <div className="dhaba-footer-col">
-            <h4>Our Policies</h4>
-            <ul className="dhaba-footer-links">
-              <li><Link to="/privacy-policy" className="dhaba-footer-link">Privacy Policy</Link></li>
-              <li><Link to="/terms-conditions" className="dhaba-footer-link">Terms & Conditions</Link></li>
-              <li><Link to="/refund-cancellation" className="dhaba-footer-link">Refund & Cancellation</Link></li>
-              <li><Link to="/shipping-policy" className="dhaba-footer-link">Shipping Policy</Link></li>
-            </ul>
-          </div>
-
-          {/* Column 4: Contact & Hours */}
-          <div className="dhaba-footer-col">
-            <h4>Contact Details</h4>
-            <p className="dhaba-footer-info" style={{ wordBreak: 'break-word' }}>
-              Address: 81, Nilgunj Road, Panjavila, Jagarata Pally, Deshpriya Nagar, Agarpara, Kolkata, West Bengal 700109
-            </p>
-            <p className="dhaba-footer-info">
-              Phone: <a href="tel:+919903005932">+91 9903005932</a><br />
-              Secondary: <a href="tel:+919875521685">+91 9875521685</a>
-            </p>
-            <p className="dhaba-footer-info" style={{ marginTop: '15px' }}>
-              <strong>Opening Hours:</strong><br />
-              Mon - Sun: 10:00 AM - 10:00 PM
-            </p>
-          </div>
+    <footer className="site-footer">
+      <div className="container footer-grid">
+        <div className="footer-brand">
+          <span className="footer-badge">
+            <img src="/img/logo.png" alt="Yaara Da Dhaba" width="120" height="114" loading="lazy" />
+          </span>
+          <p>Rolls, chow, biryani and dosa, cooked fresh every day for the people of Agarpara.</p>
+          <OpenBadge className="on-dark" />
         </div>
 
-        {/* Footer Bottom: Copyright */}
-        <div className="dhaba-footer-bottom">
-          <p className="dhaba-footer-copyright">
-            Copyright © {currentYear} <strong>YAARA DA DHABA</strong>. All Rights Reserved. Designed & Developed by{' '}
-            <a href="#" target="_blank" rel="noopener noreferrer">DNA Coded</a>.
-          </p>
+        <div>
+          <h2 className="footer-title">Explore</h2>
+          <ul className="footer-links">
+            <li><Link to="/menu">Menu and prices</Link></li>
+            <li><Link to="/gallery">Gallery</Link></li>
+            <li><Link to="/reviews">Reviews</Link></li>
+            <li><Link to="/about">About us</Link></li>
+            <li><Link to="/contact">Contact</Link></li>
+            <li><Link to="/contact#faq">Questions and answers</Link></li>
+          </ul>
         </div>
+
+        <div>
+          <h2 className="footer-title">Visit</h2>
+          <address className="footer-address">
+            {site.addressLines.map((l) => <span key={l}>{l}</span>)}
+          </address>
+          <p className="footer-hours">{site.hoursLabel}</p>
+          <a className="footer-inline-link" href={site.directionsLink} target="_blank" rel="noopener noreferrer">
+            <Icon name="directions" size={16} /> Get directions
+          </a>
+        </div>
+
+        <div>
+          <h2 className="footer-title">Order</h2>
+          <ul className="footer-links">
+            <li><a href={`tel:${site.phonePrimary}`}><Icon name="phone" size={16} /> {site.phonePrimaryLabel}</a></li>
+            <li><a href={`tel:${site.phoneSecondary}`}><Icon name="phone" size={16} /> {site.phoneSecondaryLabel}</a></li>
+            <li><a href={whatsappLink(GREETING)} target="_blank" rel="noopener noreferrer"><Icon name="whatsapp" size={16} /> WhatsApp us</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div className="container footer-bottom">
+        <p>© {year} Yaara Da Dhaba. All rights reserved.</p>
+        <ul className="footer-legal">
+          <li><Link to="/privacy-policy">Privacy</Link></li>
+          <li><Link to="/terms-conditions">Terms</Link></li>
+          <li><Link to="/refund-cancellation">Refunds</Link></li>
+          <li><Link to="/shipping-policy">Delivery</Link></li>
+        </ul>
+        <p className="footer-credit">Website by DNA Coded</p>
       </div>
     </footer>
   );
