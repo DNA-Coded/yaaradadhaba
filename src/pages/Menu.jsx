@@ -88,16 +88,11 @@ export default function Menu() {
     const el = document.getElementById(id);
     if (!el) return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    // Land the section just under the sticky toolbar. On phones the header
-    // hides while scrolling down, so only count it when it will be visible.
+    // Land the section just under the fixed header and sticky toolbar.
     const toolbarH = document.querySelector('.menu-toolbar')?.offsetHeight || 0;
     const headerH = document.querySelector('.site-header')?.offsetHeight || 0;
-    const mobile = window.matchMedia('(max-width: 900px)').matches;
     const target = el.getBoundingClientRect().top + window.scrollY;
-    let top = target - toolbarH - 8;
-    const headerWillHide = mobile && target > window.scrollY && top > 160;
-    if (!headerWillHide) top -= headerH;
-    window.scrollTo({ top: Math.max(0, top), behavior: reduce ? 'auto' : 'smooth' });
+    window.scrollTo({ top: Math.max(0, target - headerH - toolbarH - 8), behavior: reduce ? 'auto' : 'smooth' });
     setActive(id);
     history.replaceState(null, '', `#${id}`);
   };

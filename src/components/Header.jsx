@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import Icon from './Icon.jsx';
 import { OpenBadge } from './ui.jsx';
@@ -7,9 +7,8 @@ import { site, whatsappLink, GREETING } from '../data/site.js';
 import SearchDialog from './SearchDialog.jsx';
 import useTheme from '../hooks/useTheme.js';
 
-// "Home" is left out on purpose: the logo already links home, and phones have
-// a Home tab in the bottom bar.
 const links = [
+  { to: '/', label: 'Home', end: true },
   { to: '/menu', label: 'Menu' },
   { to: '/gallery', label: 'Gallery' },
   { to: '/reviews', label: 'Reviews' },
@@ -17,17 +16,35 @@ const links = [
   { to: '/contact', label: 'Contact' },
 ];
 
-const MOBILE = '(max-width: 900px)';
-
+// Fixed header. Row 1: logo + name and actions. Page links sit inline on wide
+// screens and become a swipeable row of tabs underneath on phones and tablets.
 export default function Header() {
-  const [open, setOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
-  const location = useLocation();
   const [searchOpen, setSearchOpen] = useState(false);
   const [theme, toggleTheme] = useTheme();
   const { count, setOpen: openCart } = useCart();
+  const location = useLocation();
+  const tabsRef = useRef(null);
   const closeSearch = useCallback(() => setSearchOpen(false), []);
+
+  useEffect(() => setMoreOpen(false), [location.pathname]);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Keep the current page's tab in view on small screens.
+  useEffect(() => {
+    const bar = tabsRef.current;
+    const active = bar?.querySelector('.is-active');
+    if (bar && active && bar.scrollWidth > bar.clientWidth) {
+      bar.scrollTo({ left: active.offsetLeft - bar.clientWidth / 2 + active.clientWidth / 2, behavior: 'smooth' });
+    }
+  }, [location.pathname]);
 
   // "/" opens search (desktop keyboards), unless the visitor is typing.
   useEffect(() => {
@@ -44,90 +61,48 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    setOpen(false);
-    setHidden(false);
-  }, [location.pathname]);
-
-  // On phones the header slides away while scrolling down and returns on the
-  // way up, so the screen is used for food rather than chrome.
-  useEffect(() => {
-    let lastY = window.scrollY;
-    let ticking = false;
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        const y = window.scrollY;
-        setScrolled(y > 12);
-        if (window.matchMedia(MOBILE).matches) {
-          if (y > 160 && y > lastY + 6) setHidden(true);
-          else if (y < lastY - 6 || y <= 160) setHidden(false);
-        } else {
-          setHidden(false);
-        }
-        lastY = y;
-        ticking = false;
-      });
-    };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.toggleAttribute('data-header-hidden', hidden && !open);
-  }, [hidden, open]);
-
-  useEffect(() => {
-    if (!open) return undefined;
+    if (!moreOpen) return undefined;
     document.body.classList.add('no-scroll-mobile');
-    const onKey = (e) => e.key === 'Escape' && setOpen(false);
+    const onKey = (e) => e.key === 'Escape' && setMoreOpen(false);
     document.addEventListener('keydown', onKey);
     return () => {
       document.body.classList.remove('no-scroll-mobile');
       document.removeEventListener('keydown', onKey);
     };
-  }, [open]);
+  }, [moreOpen]);
 
   return (
-    <header className={`site-header ${scrolled ? 'is-scrolled' : ''} ${open ? 'is-menu-open' : ''}`}>
+    <header className={`site-header ${scrolled ? 'is-scrolled' : ''} ${moreOpen ? 'is-menu-open' : ''}`}>
       <div className="container header-inner">
-        <Link to="/" className="brand" aria-label="Yaara Da Dhaba home">
+        <Link to="/" className="brand" aria-label="Yaara Da Dhaba, home">
           <picture>
             <source srcSet="/img/logo.webp" type="image/webp" />
-            <img src="/img/logo.png" alt="Yaara Da Dhaba" width="360" height="343" className="brand-logo" />
+            <img src="/img/logo.png" alt="" width="360" height="343" className="brand-logo" />
           </picture>
+          <span className="brand-text">
+            <span className="brand-name">
+              <span className="bn-1">Yaara</span> <span className="bn-2">Da</span> <span className="bn-3">Dhaba</span>
+            </span>
+            <span className="brand-place">Agarpara, Kolkata</span>
+          </span>
         </Link>
 
-        <nav id="site-nav" className="site-nav" aria-label="Main">
-          <ul>
-            {links.map((l, i) => (
-              <li key={l.to} style={{ '--i': i }}>
-                <NavLink to={l.to} className={({ isActive }) => `nav-link ${isActive ? 'is-active' : ''}`}>
+        <nav className="site-nav" aria-label="Main">
+          <ul ref={tabsRef}>
+            {links.map((l) => (
+              <li key={l.to}>
+                <NavLink to={l.to} end={l.end} className={({ isActive }) => `nav-link ${isActive ? 'is-active' : ''}`}>
                   {l.label}
                 </NavLink>
               </li>
             ))}
           </ul>
-          <div className="nav-extra">
-            <button type="button" className="theme-row" onClick={toggleTheme} aria-pressed={theme === 'dark'}>
-              <Icon name={theme === 'dark' ? 'sun' : 'moon'} />
-              {theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            </button>
-            <OpenBadge />
-            <p>{site.hoursLabel}</p>
-            <div className="nav-extra-actions">
-              <a href={`tel:${site.phonePrimary}`} className="btn btn-primary">
-                <Icon name="phone" /> Call
-              </a>
-              <a href={whatsappLink(GREETING)} className="btn btn-whatsapp" target="_blank" rel="noopener noreferrer">
-                <Icon name="whatsapp" /> WhatsApp
-              </a>
-            </div>
-          </div>
         </nav>
 
         <div className="header-actions">
+          <a href={`tel:${site.phonePrimary}`} className="header-phone">
+            <Icon name="phone" size={18} /> {site.phonePrimaryLabel}
+          </a>
           <button type="button" className="icon-btn header-icon" onClick={() => setSearchOpen(true)} aria-label="Search dishes and pages" title="Search ( / )">
             <Icon name="search" />
           </button>
@@ -150,13 +125,44 @@ export default function Header() {
           <button
             type="button"
             className="menu-toggle"
-            onClick={() => setOpen((o) => !o)}
-            aria-expanded={open}
-            aria-controls="site-nav"
-            aria-label={open ? 'Close menu' : 'Open menu'}
+            onClick={() => setMoreOpen((o) => !o)}
+            aria-expanded={moreOpen}
+            aria-controls="more-panel"
+            aria-label={moreOpen ? 'Close menu' : 'Open menu'}
           >
             <span className="menu-toggle-bars" aria-hidden="true"><span /><span /><span /></span>
           </button>
+        </div>
+      </div>
+
+      <div id="more-panel" className="more-panel" inert={moreOpen ? undefined : ''}>
+        <div className="container more-inner">
+          <ul className="more-links">
+            {links.map((l, i) => (
+              <li key={l.to} style={{ '--i': i }}>
+                <NavLink to={l.to} end={l.end} className={({ isActive }) => `more-link ${isActive ? 'is-active' : ''}`}>
+                  {l.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+          <div className="more-extra">
+            <OpenBadge />
+            <p>{site.hoursLabel}</p>
+            <p className="more-address">{site.addressFull}</p>
+            <div className="more-actions">
+              <a href={`tel:${site.phonePrimary}`} className="btn btn-primary">
+                <Icon name="phone" /> Call
+              </a>
+              <a href={whatsappLink(GREETING)} className="btn btn-whatsapp" target="_blank" rel="noopener noreferrer">
+                <Icon name="whatsapp" /> WhatsApp
+              </a>
+            </div>
+            <button type="button" className="theme-row" onClick={toggleTheme} aria-pressed={theme === 'dark'}>
+              <Icon name={theme === 'dark' ? 'sun' : 'moon'} />
+              {theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            </button>
+          </div>
         </div>
       </div>
       <SearchDialog open={searchOpen} onClose={closeSearch} />
