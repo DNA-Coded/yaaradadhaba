@@ -1,20 +1,56 @@
 {
-  "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/(menu|gallery|reviews|about|contact|privacy-policy|terms-conditions|refund-cancellation|shipping-policy)",
+      "source": "/menu",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/gallery",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/reviews",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/contact",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/privacy-policy",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/terms-conditions",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/refund-cancellation",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/shipping-policy",
       "destination": "/index.html"
     }
   ],
   "redirects": [
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
     {
       "source": "/onlineorder",
       "destination": "/menu",
       "permanent": true
     },
     {
-      "source": "/onlineorder/(.*)",
+      "source": "/onlineorder/:path*",
       "destination": "/menu",
       "permanent": true
     }
